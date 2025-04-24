@@ -210,8 +210,8 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-elixir@1.0.0/dist/mind-elixir.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 缓存 DOM 元素
-            const elements = {
+            // 集中缓存所有需要操作的 DOM 元素
+            const cacheDOM = () => ({
                 menuToggle: document.querySelector('.menu-toggle'),
                 navLinks: document.querySelector('.nav-links'),
                 mindmapEditor: document.getElementById('mindmap-editor'),
@@ -222,9 +222,17 @@
                 communityHelp: document.getElementById('community-help'),
                 communityHelpBtn: document.querySelector('.community-help-btn'),
                 mainContent: document.querySelector('main')
+            });
+
+            const elements = cacheDOM();
+
+            // 封装界面切换逻辑，使用对象存储不同元素对应的显示样式
+            const displayStyles = {
+                [elements.roadmapCards]: 'grid',
+                [elements.mindmapEditor]: 'block',
+                [elements.mainContent]: 'block'
             };
 
-            // 封装界面切换函数
             const showSection = (targetSection) => {
                 const sections = [
                     elements.personalHomepage,
@@ -233,91 +241,104 @@
                     elements.mindmapEditor,
                     elements.mainContent
                 ];
+
                 sections.forEach(section => {
-                    if (section === elements.roadmapCards) {
-                        section.style.display = targetSection === elements.mainContent || targetSection === elements.roadmapCards ? 'grid' : 'none';
-                    } else if (section === elements.mindmapEditor || section === elements.mainContent) {
-                        section.style.display = targetSection === section ? 'block' : 'none';
-                    } else {
-                        section.style.display = targetSection === section ? 'block' : 'none';
-                        section.classList.toggle('hidden', targetSection !== section);
+                    const defaultStyle = 'block';
+                    const style = displayStyles[section] || defaultStyle;
+                    section.style.display = section === targetSection ? style : 'none';
+                    if (![elements.roadmapCards, elements.mindmapEditor, elements.mainContent].includes(section)) {
+                        section.classList.toggle('hidden', section !== targetSection);
                     }
                 });
             };
 
+            // 封装思维导图数据，便于扩展和维护
+            const roadmapData = {
+                'algebra': {
+                    topic: '代数学习路线图',
+                    children: [
+                        { topic: '基本方程' },
+                        { topic: '多项式函数' }
+                    ]
+                },
+                'geometry': {
+                    topic: '几何学习路线图',
+                    children: [
+                        { topic: '形状知识' },
+                        { topic: '空间关系' }
+                    ]
+                }
+            };
 
+            const getMindData = (roadmapType) => {
+                const defaultData = {
+                    topic: '学习路线图',
+                    children: [
+                        { topic: '子主题 1' },
+                        { topic: '子主题 2' }
+                    ]
+                };
+                return roadmapData[roadmapType] || defaultData;
+            };
 
-            // 初始化显示个人主页
-            showSection(elements.personalHomepage);
-
-            // 导航栏切换按钮事件
-            elements.menuToggle.addEventListener('click', () => {
-                elements.navLinks.classList.toggle('show');
-            });
-
-            // 主页按钮点击事件
-            elements.homeBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                showSection(elements.personalHomepage);
-            });
-
-            // 知识森林按钮点击事件
-            document.querySelectorAll('a[href="#roadmap-cards"]').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showSection(elements.mainContent);
+            // 封装事件监听绑定逻辑
+            const bindEvents = () => {
+                // 导航栏切换按钮事件
+                elements.menuToggle.addEventListener('click', () => {
+                    elements.navLinks.classList.toggle('show');
                 });
-            });
 
-            // 社区帮助按钮点击事件
-            elements.communityHelpBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                showSection(elements.communityHelp);
-            });
-
-            // 查看路线图按钮点击事件
-            elements.viewRoadmapButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
+                // 主页按钮点击事件
+                elements.homeBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    showSection(elements.mindmapEditor);
+                    showSection(elements.personalHomepage);
+                });
 
-                    const roadmapType = button.dataset.roadmap;
-                    const mindData = {
-                        'algebra': {
-                            topic: '代数学习路线图',
-                            children: [
-                                { topic: '基本方程' },
-                                { topic: '多项式函数' }
-                            ]
-                        },
-                        'geometry': {
-                            topic: '几何学习路线图',
-                            children: [
-                                { topic: '形状知识' },
-                                { topic: '空间关系' }
-                            ]
+                // 知识森林按钮点击事件
+                document.querySelectorAll('a[href="#roadmap-cards"]').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        showSection(elements.mainContent);
+                    });
+                });
+
+                // 社区帮助按钮点击事件
+                elements.communityHelpBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showSection(elements.communityHelp);
+                });
+
+                // 查看路线图按钮点击事件
+                elements.viewRoadmapButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        showSection(elements.mindmapEditor);
+
+                        const roadmapType = button.dataset.roadmap;
+                        const mindData = getMindData(roadmapType);
+
+                        // 初始化思维导图并添加错误处理
+                        try {
+                            const mind = new MindElixir({
+                                el: '#mindmap-editor',
+                                direction: MindElixir.LEFT,
+                                data: mindData
+                            });
+                            mind.init();
+                        } catch (error) {
+                            console.error('初始化思维导图失败:', error);
                         }
-                    }[roadmapType] || {
-                        topic: '学习路线图',
-                        children: [
-                            { topic: '子主题 1' },
-                            { topic: '子主题 2' }
-                        ]
-                    };
-
-                    // 初始化思维导图并添加错误处理
-                    try {
-                        const mind = new MindElixir({
-                            el: '#mindmap-editor',
-                            direction: MindElixir.LEFT,
-                            data: mindData
-                        });
-                        mind.init();
-                    } catch (error) {
-                        console.error('初始化思维导图失败:', error);
-                    }
+                    });
                 });
-            });
+            };
+
+            // 初始化操作
+            const init = () => {
+                showSection(elements.personalHomepage);
+                bindEvents();
+            };
+
+            init();
         });
     </script>
 </body>

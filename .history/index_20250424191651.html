@@ -98,12 +98,11 @@
             </div>
             <div class="flex space-x-4 items-center nav-links">
                 <!-- 修改为点击跳转到个人主页 -->
-                <a href="#" class="hover:text-gray-300 home-btn">主页</a>
+                <a href="#" class="hover:text-gray-300 home-btn">主页</a> 
                 <!-- 修改为点击跳转到路线图卡片 -->
-                <a href="#roadmap-cards" class="hover:text-gray-300">知识森林</a>
+                <a href="#roadmap-cards" class="hover:text-gray-300">知识森林</a> 
                 <a href="#" class="hover:text-gray-300 community-help-btn">社区帮助</a>
-                <input type="text" placeholder="搜索学习路线图"
-                    class="border border-gray-300 rounded-md px-2 py-1">
+                <input type="text" placeholder="搜索学习路线图" class="border border-gray-300 rounded-md px-2 py-1">
             </div>
         </div>
     </nav>
@@ -211,99 +210,71 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // 缓存 DOM 元素
-            const elements = {
-                menuToggle: document.querySelector('.menu-toggle'),
-                navLinks: document.querySelector('.nav-links'),
-                mindmapEditor: document.getElementById('mindmap-editor'),
-                viewRoadmapButtons: document.querySelectorAll('.view-roadmap'),
-                personalHomepage: document.getElementById('personal-homepage'),
-                homeBtn: document.querySelector('.home-btn'),
-                roadmapCards: document.getElementById('roadmap-cards'),
-                communityHelp: document.getElementById('community-help'),
-                communityHelpBtn: document.querySelector('.community-help-btn'),
-                mainContent: document.querySelector('main')
-            };
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            const mindmapEditor = document.getElementById('mindmap-editor');
+            const viewRoadmapButtons = document.querySelectorAll('.view-roadmap');
+            const personalHomepage = document.getElementById('personal-homepage');
+            const homeBtn = document.querySelector('.home-btn');
+            const roadmapCards = document.getElementById('roadmap-cards');
+            const communityHelp = document.getElementById('community-help');
+            const communityHelpBtn = document.querySelector('.community-help-btn');
 
             // 封装界面切换函数
-            const showSection = (targetSection) => {
-                const sections = [
-                    elements.personalHomepage,
-                    elements.roadmapCards,
-                    elements.communityHelp,
-                    elements.mindmapEditor,
-                    elements.mainContent
-                ];
+            function showSection(targetSection) {
+                const sections = [personalHomepage, roadmapCards, communityHelp, mindmapEditor];
                 sections.forEach(section => {
-                    if (section === elements.roadmapCards) {
-                        section.style.display = targetSection === elements.mainContent || targetSection === elements.roadmapCards ? 'grid' : 'none';
-                    } else if (section === elements.mindmapEditor || section === elements.mainContent) {
-                        section.style.display = targetSection === section ? 'block' : 'none';
+                    if (section === targetSection) {
+                        if (section === roadmapCards) {
+                            section.style.display = 'grid';
+                        } else if (section === mindmapEditor) {
+                            section.style.display = 'block';
+                        } else {
+                            section.classList.remove('hidden');
+                        }
                     } else {
-                        section.style.display = targetSection === section ? 'block' : 'none';
-                        section.classList.toggle('hidden', targetSection !== section);
+                        if (section === roadmapCards || section === mindmapEditor) {
+                            section.style.display = 'none';
+                        } else {
+                            section.classList.add('hidden');
+                        }
                     }
                 });
-            };
-
-
-
-            // 初始化显示个人主页
-            showSection(elements.personalHomepage);
+            }
 
             // 导航栏切换按钮事件
-            elements.menuToggle.addEventListener('click', () => {
-                elements.navLinks.classList.toggle('show');
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('show');
             });
 
             // 主页按钮点击事件
-            elements.homeBtn.addEventListener('click', (e) => {
+            homeBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                showSection(elements.personalHomepage);
+                showSection(personalHomepage);
             });
 
             // 知识森林按钮点击事件
             document.querySelectorAll('a[href="#roadmap-cards"]').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    showSection(elements.mainContent);
+                    showSection(roadmapCards);
                 });
             });
 
             // 社区帮助按钮点击事件
-            elements.communityHelpBtn.addEventListener('click', (e) => {
+            communityHelpBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                showSection(elements.communityHelp);
+                showSection(communityHelp);
             });
 
             // 查看路线图按钮点击事件
-            elements.viewRoadmapButtons.forEach(button => {
+            viewRoadmapButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
                     e.preventDefault();
-                    showSection(elements.mindmapEditor);
+                    showSection(mindmapEditor);
 
                     const roadmapType = button.dataset.roadmap;
-                    const mindData = {
-                        'algebra': {
-                            topic: '代数学习路线图',
-                            children: [
-                                { topic: '基本方程' },
-                                { topic: '多项式函数' }
-                            ]
-                        },
-                        'geometry': {
-                            topic: '几何学习路线图',
-                            children: [
-                                { topic: '形状知识' },
-                                { topic: '空间关系' }
-                            ]
-                        }
-                    }[roadmapType] || {
-                        topic: '学习路线图',
-                        children: [
-                            { topic: '子主题 1' },
-                            { topic: '子主题 2' }
-                        ]
-                    };
+                    const mindData = getMindData(roadmapType);
 
                     // 初始化思维导图并添加错误处理
                     try {
@@ -318,6 +289,44 @@
                     }
                 });
             });
+
+            // 封装获取思维导图数据的函数
+            function getMindData(roadmapType) {
+                let mindData = {
+                    topic: '学习路线图',
+                    children: [
+                        { topic: '子主题 1' },
+                        { topic: '子主题 2' }
+                    ]
+                };
+
+                switch (roadmapType) {
+                    case 'algebra':
+                        mindData = {
+                            topic: '代数学习路线图',
+                            children: [
+                                { topic: '基本方程' },
+                                { topic: '多项式函数' }
+                            ]
+                        };
+                        break;
+                    case 'geometry':
+                        mindData = {
+                            topic: '几何学习路线图',
+                            children: [
+                                { topic: '形状知识' },
+                                { topic: '空间关系' }
+                            ]
+                        };
+                        break;
+                    // 可按照此模式添加更多路线图的思维导图数据
+                    // case 'calculus':
+                    //     mindData = { ... };
+                    //     break;
+                    // ...
+                }
+                return mindData;
+            }
         });
     </script>
 </body>

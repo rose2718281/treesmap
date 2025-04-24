@@ -98,25 +98,24 @@
             </div>
             <div class="flex space-x-4 items-center nav-links">
                 <!-- 修改为点击跳转到个人主页 -->
-                <a href="#" class="hover:text-gray-300 home-btn">主页</a>
+                <a href="#" class="hover:text-gray-300 home-btn">主页</a> 
                 <!-- 修改为点击跳转到路线图卡片 -->
-                <a href="#roadmap-cards" class="hover:text-gray-300">知识森林</a>
-                <a href="#" class="hover:text-gray-300 community-help-btn">社区帮助</a>
-                <input type="text" placeholder="搜索学习路线图"
-                    class="border border-gray-300 rounded-md px-2 py-1">
+                <a href="#roadmap-cards" class="hover:text-gray-300">知识森林</a> 
+                <a href="#" class="hover:text-gray-300">社区帮助</a>
+                <input type="text" placeholder="搜索学习路线图" class="border border-gray-300 rounded-md px-2 py-1">
             </div>
         </div>
     </nav>
 
-    <!-- 个人主页界面，初始不隐藏 -->
-    <div id="personal-homepage" class="container mx-auto px-4 py-8">
+    <!-- 个人主页界面，初始隐藏 -->
+    <div id="personal-homepage" class="container mx-auto px-4 py-8 hidden">
         <h1 class="text-3xl font-bold text-gray-800 mb-4">个人主页</h1>
         <!-- 个人头像 -->
         <img src="https://via.placeholder.com/120" alt="个人头像" class="profile-avatar">
         <!-- 个人简介模块 -->
         <div class="bg-white rounded-md shadow-md p-4 mb-8">
             <h2 class="text-xl font-bold text-gray-800 mb-2">个人简介</h2>
-            <p class="text-gray-600">空空如也</p>
+            <p class="text-gray-600">我是一名数学爱好者，致力于深入学习各类数学知识，期望通过不断探索，提升自己在数学领域的能力。</p>
         </div>
         <!-- 历史记录模块 -->
         <div class="bg-white rounded-md shadow-md p-4 mb-8">
@@ -139,10 +138,27 @@
             </div>
         </div>
     </div>
-    <!-- 移除最近学习进度和最近学习目标模块 -->
+    <!-- 最近学习进度模块 -->
+        <div class="bg-white rounded-md shadow-md p-4 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">最近学习进度</h2>
+            <ul class="list-disc list-inside text-gray-600">
+                <li>已完成代数学习路线图中的基本方程部分</li>
+                <li>正在探索几何学习路线图中的空间关系知识</li>
+            </ul>
+        </div>
+        <!-- 目标展示模块 -->
+        <div class="bg-white rounded-md shadow-md p-4">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">学习目标</h2>
+            <ol class="list-decimal list-inside text-gray-600">
+                <li>本季度完成微积分学习路线图</li>
+                <li>年底前掌握离散数学基础知识</li>
+            </ol>
+        </div>
+    </div>
+
     <!-- 主要内容 -->
     <main class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-4">数学森林</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">热门数学学习路线图</h1>
         <!-- 为路线图卡片添加锚点 -->
         <div id="roadmap-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"> 
             <!-- 路线图卡片 -->
@@ -209,183 +225,62 @@
     <!-- 引入 mind-elixir 库的 JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/mind-elixir@1.0.0/dist/mind-elixir.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // 缓存 DOM 元素
-            const elements = {
-                menuToggle: document.querySelector('.menu-toggle'),
-                navLinks: document.querySelector('.nav-links'),
-                mindmapEditor: document.getElementById('mindmap-editor'),
-                viewRoadmapButtons: document.querySelectorAll('.view-roadmap'),
-                personalHomepage: document.getElementById('personal-homepage'),
-                homeBtn: document.querySelector('.home-btn'),
-                roadmapCards: document.getElementById('roadmap-cards'),
-                communityHelp: document.getElementById('community-help'),
-                communityHelpBtn: document.querySelector('.community-help-btn'),
-                mainContent: document.querySelector('main')
-            };
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        const mindmapEditor = document.getElementById('mindmap-editor');
+        const viewRoadmapButtons = document.querySelectorAll('.view-roadmap');
+        // 获取个人主页和主页按钮元素
+        const personalHomepage = document.getElementById('personal-homepage');
+        const homeBtn = document.querySelector('.home-btn');
+        const roadmapCards = document.getElementById('roadmap-cards');
 
-            // 封装界面切换函数
-            const showSection = (targetSection) => {
-                const sections = [
-                    elements.personalHomepage,
-                    elements.roadmapCards,
-                    elements.communityHelp,
-                    elements.mindmapEditor,
-                    elements.mainContent
-                ];
-                sections.forEach(section => {
-                    if (section === elements.roadmapCards) {
-                        section.style.display = targetSection === elements.mainContent || targetSection === elements.roadmapCards ? 'grid' : 'none';
-                    } else if (section === elements.mindmapEditor || section === elements.mainContent) {
-                        section.style.display = targetSection === section ? 'block' : 'none';
-                    } else {
-                        section.style.display = targetSection === section ? 'block' : 'none';
-                        section.classList.toggle('hidden', targetSection !== section);
-                    }
-                });
-            };
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('show');
+        });
 
+        // 主页按钮点击事件
+        homeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            personalHomepage.classList.remove('hidden');
+            roadmapCards.style.display = 'none';
+        });
 
-
-            // 初始化显示个人主页
-            showSection(elements.personalHomepage);
-
-            // 导航栏切换按钮事件
-            elements.menuToggle.addEventListener('click', () => {
-                elements.navLinks.classList.toggle('show');
-            });
-
-            // 主页按钮点击事件
-            elements.homeBtn.addEventListener('click', (e) => {
+        // 为知识森林按钮添加点击事件，确保点击后显示路线图卡片
+        document.querySelectorAll('a[href="#roadmap-cards"]').forEach(link => {
+            link.addEventListener('click', (e) => {
                 e.preventDefault();
-                showSection(elements.personalHomepage);
+                personalHomepage.classList.add('hidden');
+                roadmapCards.style.display = 'grid';
+                // 平滑滚动到路线图卡片位置
+                roadmapCards.scrollIntoView({ behavior: 'smooth' });
             });
+        });
 
-            // 知识森林按钮点击事件
-            document.querySelectorAll('a[href="#roadmap-cards"]').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showSection(elements.mainContent);
-                });
-            });
-
-            // 社区帮助按钮点击事件
-            elements.communityHelpBtn.addEventListener('click', (e) => {
+        viewRoadmapButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
                 e.preventDefault();
-                showSection(elements.communityHelp);
-            });
+                mindmapEditor.style.display = 'block';
 
-            // 查看路线图按钮点击事件
-            elements.viewRoadmapButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showSection(elements.mindmapEditor);
-
-                    const roadmapType = button.dataset.roadmap;
-                    const mindData = {
-                        'algebra': {
-                            topic: '代数学习路线图',
-                            children: [
-                                { topic: '基本方程' },
-                                { topic: '多项式函数' }
-                            ]
-                        },
-                        'geometry': {
-                            topic: '几何学习路线图',
-                            children: [
-                                { topic: '形状知识' },
-                                { topic: '空间关系' }
-                            ]
-                        }
-                    }[roadmapType] || {
+                // 初始化思维导图
+                const mind = new MindElixir({
+                    el: '#mindmap-editor',
+                    direction: MindElixir.LEFT,
+                    data: {
                         topic: '学习路线图',
                         children: [
-                            { topic: '子主题 1' },
-                            { topic: '子主题 2' }
+                            {
+                                topic: '子主题 1'
+                            },
+                            {
+                                topic: '子主题 2'
+                            }
                         ]
-                    };
-
-                    // 初始化思维导图并添加错误处理
-                    try {
-                        const mind = new MindElixir({
-                            el: '#mindmap-editor',
-                            direction: MindElixir.LEFT,
-                            data: mindData
-                        });
-                        mind.init();
-                    } catch (error) {
-                        console.error('初始化思维导图失败:', error);
                     }
                 });
+                mind.init();
             });
         });
     </script>
 </body>
 
 </html>
-
-
-    <!-- 社区帮助界面，初始隐藏 -->
-    <div id="community-help" class="container mx-auto px-4 py-8 hidden">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">社区帮助中心</h1>
-
-        <!-- 常见问题模块 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">常见问题</h2>
-            <div class="space-y-4">
-                <div>
-                    <h3 class="text-xl font-semibold text-gray-800">如何开始学习代数？</h3>
-                    <p class="text-gray-600">你可以从点击“代数学习路线图”卡片开始，里面会详细介绍从基本方程到多项式函数的学习路径。建议先掌握基本方程的解法，再逐步深入学习多项式函数。</p>
-                </div>
-                <div>
-                    <h3 class="text-xl font-semibold text-gray-800">几何学习有哪些实用技巧？</h3>
-                    <p class="text-gray-600">学习几何时，多画图能帮助你更好地理解形状和空间关系。同时，结合实际生活中的例子，将抽象的几何知识具象化。也可以通过做练习题来巩固所学知识。</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 交流论坛模块 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">交流论坛</h2>
-            <p class="text-gray-600 mb-4">加入我们的交流论坛，与其他数学爱好者一起讨论学习心得、分享学习资源。</p>
-            <a href="#" class="text-blue-500 hover:underline">进入交流论坛</a>
-        </div>
-
-        <!-- 反馈表单模块 -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">反馈与建议</h2>
-            <p class="text-gray-600 mb-4">如果你有任何问题、建议或意见，欢迎通过以下表单告诉我们。</p>
-            <form>
-                <div class="mb-4">
-                    <label for="name" class="block text-gray-700 font-semibold mb-2">姓名</label>
-                    <input type="text" id="name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="mb-4">
-                    <label for="email" class="block text-gray-700 font-semibold mb-2">邮箱</label>
-                    <input type="email" id="email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="mb-4">
-                    <label for="message" class="block text-gray-700 font-semibold mb-2">留言内容</label>
-                    <textarea id="message" rows="4" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500"></textarea>
-                </div>
-                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none">提交反馈</button>
-            </form>
-        </div>
-
-        <!-- 联系信息模块 -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">联系我们</h2>
-            <ul class="space-y-2">
-                <li class="flex items-center text-gray-600">
-                    <i class="fa-solid fa-envelope mr-2"></i>
-                    <span>contact@treesmap.com</span>
-                </li>
-                <li class="flex items-center text-gray-600">
-                    <i class="fa-solid fa-phone mr-2"></i>
-                    <span>+86 123-456-7890</span>
-                </li>
-            </ul>
-        </div>
-    </div>
-    </body>
-    </html>

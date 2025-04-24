@@ -245,8 +245,6 @@
                 });
             };
 
-
-
             // 初始化显示个人主页
             showSection(elements.personalHomepage);
 
@@ -265,6 +263,7 @@
             document.querySelectorAll('a[href="#roadmap-cards"]').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
+                    // 显示包含路线图卡片的主内容区域
                     showSection(elements.mainContent);
                 });
             });
@@ -282,28 +281,7 @@
                     showSection(elements.mindmapEditor);
 
                     const roadmapType = button.dataset.roadmap;
-                    const mindData = {
-                        'algebra': {
-                            topic: '代数学习路线图',
-                            children: [
-                                { topic: '基本方程' },
-                                { topic: '多项式函数' }
-                            ]
-                        },
-                        'geometry': {
-                            topic: '几何学习路线图',
-                            children: [
-                                { topic: '形状知识' },
-                                { topic: '空间关系' }
-                            ]
-                        }
-                    }[roadmapType] || {
-                        topic: '学习路线图',
-                        children: [
-                            { topic: '子主题 1' },
-                            { topic: '子主题 2' }
-                        ]
-                    };
+                    const mindData = getMindData(roadmapType);
 
                     // 初始化思维导图并添加错误处理
                     try {
@@ -318,6 +296,36 @@
                     }
                 });
             });
+
+            // 封装获取思维导图数据的函数
+            const getMindData = (roadmapType) => {
+                const defaultData = {
+                    topic: '学习路线图',
+                    children: [
+                        { topic: '子主题 1' },
+                        { topic: '子主题 2' }
+                    ]
+                };
+
+                const roadmapData = {
+                    'algebra': {
+                        topic: '代数学习路线图',
+                        children: [
+                            { topic: '基本方程' },
+                            { topic: '多项式函数' }
+                        ]
+                    },
+                    'geometry': {
+                        topic: '几何学习路线图',
+                        children: [
+                            { topic: '形状知识' },
+                            { topic: '空间关系' }
+                        ]
+                    }
+                };
+
+                return roadmapData[roadmapType] || defaultData;
+            };
         });
     </script>
 </body>
