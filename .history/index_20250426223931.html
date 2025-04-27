@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <!-- 引入 mind-elixir 库的 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mind-elixir@1.0.0/dist/mind-elixir.min.css">
+    <style>
+        /* 自定义导航栏颜色为绿色 */
+        nav {
+            background-color: #38a169;
+        }
+
+        nav a {
+            color: white;
+        }
+
+        nav a:hover {
+            color: #e2e8f0;
+        }
+
+        /* 自定义卡片样式 */
+        .bg-white {
+            transition: transform 0.3s ease;
+        }
+
+        .bg-white:hover {
+            transform: scale(1.05);
+        }
+
+        /* 导航栏切换按钮样式 */
+        .menu-toggle {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background-color: #38a169;
+                padding: 10px;
+            }
+
+            .nav-links.show {
+                display: block;
+            }
+        }
+
+        /* 思维导图编辑区域样式 */
+        #mindmap-editor {
+            display: none;
+            height: 500px;
+            width: 100%;
+        }
+
+        /* 个人主页头像样式 */
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px;
+        }
+
+        /* 我的路线图卡片样式 */
+        .my-roadmap-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 优化后的标题样式 */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #38a169;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        h1::after {
+            content: "";
+            display: block;
+            width: 100px;
+            height: 3px;
+            background-color: #38a169;
+            margin: 0.5rem auto 0;
+        }
+
+        /* 分割线样式 */
+        .section-divider {
+            border-top: 2px solid #ccc;
+            margin: 2rem 0;
+            width: 100%;
+        }
+
+        /* 区域标识样式 */
+        .area-label {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #38a169;
+            margin-bottom: 1rem;
+        }
+
+        /* 数理森林卡片样式 */
+        #math-physics-card {
+            cursor: pointer;
+        }
+
+        /* 计算机Maps卡片样式 */
+        #computer-maps-card {
+            cursor: pointer;
+        }
+
+        /* 知识卡片初始隐藏 */
+        #roadmap-cards {
+            display: none;
+        }
+
+        #computer-roadmap-cards {
+            display: none;
+        }
+    </style>
+    <title>TreesMap - 学习路线图</title>
+</head>
+
+<body class="bg-gray-100 font-sans">
+    <!-- 导航栏 -->
+    <nav class="shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- 添加“知识森林”标志 -->
+            <a href="#" class="text-xl font-bold flex items-center">
+                <span class="mr-2">🌳 知识森林</span>
+                TreesMap
+            </a>
+            <div class="menu-toggle">
+                <i class="fa-solid fa-bars text-white cursor-pointer"></i>
+            </div>
+            <div class="flex space-x-4 items-center nav-links">
+                <!-- 修改为点击跳转到个人主页 -->
+                <a href="#" class="hover:text-gray-300 home-btn">主页</a>
+                <!-- 修改为点击跳转到路线图卡片 -->
+                <a href="#" class="hover:text-gray-300 knowledge-forest-btn">知识森林</a>
+                <a href="#" class="hover:text-gray-300 community-help-btn">社区帮助</a>
+                <input type="text" placeholder="搜索学习路线图"
+                    class="border border-gray-300 rounded-md px-2 py-1">
+            </div>
+        </div>
+    </nav>
+
+    <!-- 个人主页界面，初始不隐藏 -->
+    <div id="personal-homepage" class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">个人主页</h1>
+        <!-- 个人头像 -->
+        <img src="https://via.placeholder.com/120" alt="个人头像" class="profile-avatar">
+        <!-- 个人简介模块 -->
+        <div class="bg-white rounded-md shadow-md p-4 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">个人简介</h2>
+            <p class="text-gray-600">空空如也</p>
+        </div>
+        <!-- 历史记录模块 -->
+        <div class="bg-white rounded-md shadow-md p-4 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">历史记录</h2>
+            <ul class="list-disc list-inside text-gray-600">
+                <li>2025-04-20 查看代数学习路线图</li>
+                <li>2025-04-22 查看几何学习路线图</li>
+            </ul>
+        </div>
+        <!-- 我的路线图模块 -->
+        <div class="bg-white rounded-md shadow-md p-4">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">我的路线图</h2>
+            <div class="my-roadmap-card">
+                <h3 class="text-lg font-semibold text-gray-800 mb-1">代数学习路线图</h3>
+                <p class="text-gray-600">进度：60%</p>
+            </div>
+            <div class="my-roadmap-card">
+                <h3 class="text-lg font-semibold text-gray-800 mb-1">几何学习路线图</h3>
+                <p class="text-gray-600">进度：30%</p>
+            </div>
+        </div>
+    </div>
+    <!-- 移除最近学习进度和最近学习目标模块 -->
+    <!-- 主要内容 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 数理森林卡片 -->
+        <div id="math-physics-card" class="bg-white rounded-md shadow-md p-4">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">数理森林</h2>
+            <p class="text-gray-600 mb-4">点击查看数理相关的学习路线图</p>
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <!-- 计算机Maps卡片 -->
+        <div id="computer-maps-card" class="bg-white rounded-md shadow-md p-4">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">计算机Maps</h2>
+            <p class="text-gray-600 mb-4">点击查看计算机相关的学习路线图</p>
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <!-- 为路线图卡片添加锚点 -->
+        <div id="roadmap-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"> 
+            <!-- 数学区域标识 -->
+            <div class="area-label col-span-full">数学知识</div>
+            <!-- 路线图卡片 -->
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">高中数学学习路线图（High School）</h2>
+                <p class="text-gray-600 mb-4">高中数学的基础知识：集合、函数、数列、三角函数、平面向量……</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="High School">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">大学数学学习路线图（College）</h2>
+                <p class="text-gray-600 mb-4">微积分、线性代数、概率论与数理统计、解析几何……</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="College">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">代数学习路线图（Algebra Roadmap）</h2>
+                <p class="text-gray-600 mb-4">学习代数的基本概念，从基本方程到高级多项式函数。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="algebra">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">几何学习路线图（Geometry Roadmap）</h2>
+                <p class="text-gray-600 mb-4">探索几何的世界，包括形状、角度和空间关系。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="geometry">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">微积分学习路线图（Calculus Roadmap）</h2>
+                <p class="text-gray-600 mb-4">发现微积分的工具和技术，从导数到积分。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="calculus">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">统计学学习路线图（Statistics Roadmap）</h2>
+                <p class="text-gray-600 mb-4">使用统计方法理解数据收集、分析和解释。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="statistics">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">三角学学习路线图（Trigonometry Roadmap）</h2>
+                <p class="text-gray-600 mb-4">研究三角形的角度和边之间的关系及其应用。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="trigonometry">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">线性代数学习路线图（Linear Algebra Roadmap）</h2>
+                <p class="text-gray-600 mb-4">学习向量空间、矩阵、线性方程组等线性代数的核心内容。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="linear-algebra">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">离散数学学习路线图（Discrete Mathematics Roadmap）</h2>
+                <p class="text-gray-600 mb-4">探索离散结构，如集合、逻辑、图论等，为计算机科学打下基础。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="discrete-mathematics">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">概率论学习路线图（Probability Theory Roadmap）</h2>
+                <p class="text-gray-600 mb-4">研究随机事件和概率分布，为统计学和机器学习提供理论支持。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="probability-theory">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">复变函数学习路线图（Complex Analysis Roadmap）</h2>
+                <p class="text-gray-600 mb-4">学习复数域上的函数、积分和级数等内容，在工程和物理中有广泛应用。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="complex-analysis">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">数学分析学习路线图（Mathematical Analysis Roadmap）</h2>
+                <p class="text-gray-600 mb-4">深入研究实数和函数的极限、连续、微分和积分等理论。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="mathematical-analysis">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">更多（To see more）</h2>
+                <p class="text-gray-600 mb-4"></p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="more">查看</a>
+            </div>
+            <!-- 分割线 -->
+            <div class="section-divider col-span-full"></div>
+            <!-- 物理区域标识 -->
+            <div class="area-label col-span-full">物理知识</div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">高中物理学习路线图（High School Physics）</h2>
+                <p class="text-gray-600 mb-4">高中物理的基础知识：力学、电磁学、热学、光学……</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="High School Physics">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">大学物理学习路线图（College Physics）</h2>
+                <p class="text-gray-600 mb-4">经典力学、量子力学、相对论、热力学与统计物理……</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="College Physics">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">力学学习路线图（Mechanics Roadmap）</h2>
+                <p class="text-gray-600 mb-4">学习力学的基本概念，从牛顿运动定律到天体力学。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="mechanics">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">电磁学学习路线图（Electromagnetism Roadmap）</h2>
+                <p class="text-gray-600 mb-4">探索电磁现象的规律，从静电场到电磁波。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="electromagnetism">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">热学学习路线图（Thermodynamics Roadmap）</h2>
+                <p class="text-gray-600 mb-4">研究热现象和能量转化，从热力学定律到统计物理。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="thermodynamics">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">光学学习路线图（Optics Roadmap）</h2>
+                <p class="text-gray-600 mb-4">研究光的传播、干涉、衍射和偏振等现象。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="optics">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">量子力学学习路线图（Quantum Mechanics Roadmap）</h2>
+                <p class="text-gray-600 mb-4">探索微观世界的物理规律，从波函数到量子纠缠。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="quantum mechanics">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">相对论学习路线图（Relativity Roadmap）</h2>
+                <p class="text-gray-600 mb-4">学习狭义相对论和广义相对论的基本原理。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="relativity">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">更多（To see more）</h2>
+                <p class="text-gray-600 mb-4"></p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="more">查看</a>
+            </div>
+        </div>
+        <!-- 计算机路线图卡片 -->
+        <div id="computer-roadmap-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- 计算机科学区域标识 -->
+            <div class="area-label col-span-full">计算机科学知识</div>
+            <!-- 示例计算机路线图卡片 -->
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">编程语言学习路线图（Programming Languages）</h2>
+                <p class="text-gray-600 mb-4">学习常见编程语言如 Python、Java、C++、JavaScript 等。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="programming-languages">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">数据结构与算法学习路线图（Data Structures and Algorithms）</h2>
+                <p class="text-gray-600 mb-4">掌握各种数据结构和算法，提高编程效率，如数组、链表、栈、队列、树、图等。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="data-structures-algorithms">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">计算机网络学习路线图（Computer Networks）</h2>
+                <p class="text-gray-600 mb-4">了解计算机网络的基本原理、协议、拓扑结构等，包括 OSI 模型、TCP/IP 协议等。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="computer-networks">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">数据库学习路线图（Databases）</h2>
+                <p class="text-gray-600 mb-4">学习数据库的设计、管理和操作，如关系型数据库 MySQL、Oracle，非关系型数据库 MongoDB、Redis 等。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="databases">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">操作系统学习路线图（Operating Systems）</h2>
+                <p class="text-gray-600 mb-4">掌握操作系统的原理、进程管理、内存管理、文件系统等，如 Linux、Windows 等。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="operating-systems">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">人工智能学习路线图（Artificial Intelligence）</h2>
+                <p class="text-gray-600 mb-4">探索人工智能的基础概念、机器学习算法、深度学习框架等，如 TensorFlow、PyTorch 等。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="artificial-intelligence">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">软件开发学习路线图（Software Development）</h2>
+                <p class="text-gray-600 mb-4">学习软件开发的全流程，包括需求分析、设计、编码、测试、部署等，掌握开发工具和方法。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="software-development">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">计算机安全学习路线图（Computer Security）</h2>
+                <p class="text-gray-600 mb-4">了解计算机安全的基本概念、网络安全、密码学、漏洞修复等知识。</p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="computer-security">查看路线图</a>
+            </div>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">更多（To see more）</h2>
+                <p class="text-gray-600 mb-4"></p>
+                <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="more">查看</a>
+            </div>
+        </div>
+        <!-- 思维导图编辑区域 -->
+        <div id="mindmap-editor"></div>
+    </main>
+    <!-- 页脚 -->
+    <footer class="bg-white shadow-md mt-8">
+        <div class="container mx-auto px-4 py-3 text-center text-gray-600">
+            &copy; 2025 TreesMap. 保留所有权利。
+        </div>
+    </footer>
+    <!-- 引入 mind-elixir 库的 JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/mind-elixir@1.0.0/dist/mind-elixir.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 缓存 DOM 元素
+            const elements = {
+                menuToggle: document.querySelector('.menu-toggle'),
+                navLinks: document.querySelector('.nav-links'),
+                mindmapEditor: document.getElementById('mindmap-editor'),
+                viewRoadmapButtons: document.querySelectorAll('.view-roadmap'),
+                personalHomepage: document.getElementById('personal-homepage'),
+                homeBtn: document.querySelector('.home-btn'),
+                roadmapCards: document.getElementById('roadmap-cards'),
+                communityHelp: document.getElementById('community-help'),
+                communityHelpBtn: document.querySelector('.community-help-btn'),
+                mainContent: document.querySelector('main'),
+                knowledgeForestBtn: document.querySelector('.knowledge-forest-btn'),
+                mathPhysicsCard: document.getElementById('math-physics-card'),
+                computerMapsCard: document.getElementById('computer-maps-card'),
+                computerRoadmapCards: document.getElementById('computer-roadmap-cards')
+            };
+
+            // 封装界面切换函数
+            const showSection = (targetSection) => {
+                const sections = [
+                    elements.personalHomepage,
+                    elements.roadmapCards,
+                    elements.communityHelp,
+                    elements.mindmapEditor,
+                    elements.mainContent,
+                    elements.computerRoadmapCards
+                ];
+                sections.forEach(section => {
+                    if (section === elements.roadmapCards) {
+                        section.style.display = targetSection === elements.mainContent && elements.roadmapCards.dataset.expanded === 'true'? 'grid' : 'none';
+                    } else if (section === elements.computerRoadmapCards) {
+                        section.style.display = targetSection === elements.mainContent && elements.computerRoadmapCards.dataset.expanded === 'true'? 'grid' : 'none';
+                    } else if (section === elements.mindmapEditor || section === elements.mainContent) {
+                        section.style.display = targetSection === section ? 'block' : 'none';
+                    } else {
+                        section.style.display = targetSection === section ? 'block' : 'none';
+                        section.classList.toggle('hidden', targetSection !== section);
+                    }
+                });
+            };
+
+            // 初始化显示个人主页
+            showSection(elements.personalHomepage);
+            elements.roadmapCards.dataset.expanded = 'false';
+            elements.computerRoadmapCards.dataset.expanded = 'false';
+
+            // 导航栏切换按钮事件
+            elements.menuToggle.addEventListener('click', () => {
+                elements.navLinks.classList.toggle('show');
+            });
+
+            // 更新导航栏活跃状态
+            const updateActiveNav = (activeButton) => {
+                // 移除所有导航项的活跃状态
+                document.querySelectorAll('nav a').forEach(link => {
+                    link.classList.remove('active-nav');
+                });
+                // 添加活跃状态到当前按钮
+                activeButton.classList.add('active-nav');
+            };
+
+            // 主页按钮点击事件
+            elements.homeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection(elements.personalHomepage);
+                updateActiveNav(elements.homeBtn);
+            });
+
+            // 知识森林按钮点击事件
+            elements.knowledgeForestBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection(elements.mainContent);
+                updateActiveNav(elements.knowledgeForestBtn);
+            });
+
+            // 社区帮助按钮点击事件
+            elements.communityHelpBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection(elements.communityHelp);
+                updateActiveNav(elements.communityHelpBtn);
+            });
+
+            // 数理森林卡片点击事件
+            elements.mathPhysicsCard.addEventListener('click', () => {
+                const isExpanded = elements.roadmapCards.dataset.expanded === 'true';
+                elements.roadmapCards.dataset.expanded =!isExpanded;
+                elements.roadmapCards.style.display =!isExpanded? 'grid' : 'none';
+                const icon = elements.mathPhysicsCard.querySelector('i');
+                icon.classList.toggle('fa-chevron-down', isExpanded);
+                icon.classList.toggle('fa-chevron-up',!isExpanded);
+            });
+
+            // 计算机Maps卡片点击事件
+            elements.computerMapsCard.addEventListener('click', () => {
+                const isExpanded = elements.computerRoadmapCards.dataset.expanded === 'true';
+                elements.computerRoadmapCards.dataset.expanded =!isExpanded;
+                elements.computerRoadmapCards.style.display =!isExpanded? 'grid' : 'none';
+                const icon = elements.computerMapsCard.querySelector('i');
+                icon.classList.toggle('fa-chevron-down', isExpanded);
+                icon.classList.toggle('fa-chevron-up',!isExpanded);
+            });
+
+            // 查看路线图按钮点击事件
+            elements.viewRoadmapButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showSection(elements.mindmapEditor);
+
+                    const roadmapType = button.dataset.roadmap;
+                    const mindData = {
+                        'algebra': {
+                            topic: '代数学习路线图',
+                            children: [
+                                { topic: '基本方程' },
+                                { topic: '多项式函数' }
+                            ]
+                        },
+                        'geometry': {
+                            topic: '几何学习路线图',
+                            children: [
+                                { topic: '形状知识' },
+                                { topic: '空间关系' }
+                            ]
+                        },
+                        'programming-languages': {
+                            topic: '编程语言学习路线图',
+                            children: [
+                                { topic: 'Python' },
+                                { topic: 'Java' },
+                                { topic: 'C++' }
+                            ]
+                        },
+                        'data-structures-algorithms': {
+                            topic: '数据结构与算法学习路线图',
+                            children: [
+                                { topic: '数组' },
+                                { topic: '链表' },
+                                { topic: '排序算法' }
+                            ]
+                        }
+                        // 可以在这里添加更多路线图的思维导图数据
+                    }[roadmapType] || {
+                        topic: '学习路线图',
+                        children: [
+                            { topic: '子主题 1' },
+                            { topic: '子主题 2' }
+                        ]
+                    };
+
+                    // 初始化思维导图并添加错误处理
+                    try {
+                        const mind = new MindElixir({
+                            el: '#mindmap-editor',
+                            direction: MindElixir.LEFT,
+                            data: mindData
+                        });
+                        mind.init();
+                    } catch (error) {
+                        console.error('初始化思维导图失败:', error);
+                    }
+                });
+            });
+        });
+    </script>
+    <!-- 社区帮助界面，初始隐藏 -->
+    <div id="community-help" class="container mx-auto px-4 py-8 hidden">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">社区帮助中心</h1>
+
+        <!-- 常见问题模块 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">常见问题</h2>
+            <div class="space-y-4">
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800">如何开始学习代数？</h3>
+                    <p class="text-gray-600">你可以从点击“代数学习路线图”卡片开始，里面会详细介绍从基本方程到多项式函数的学习路径。建议先掌握基本方程的解法，再逐步深入学习多项式函数。</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800">几何学习有哪些实用技巧？</h3>
+                    <p class="text-gray-600">学习几何时，多画图能帮助你更好地理解形状和空间关系。同时，结合实际生活中的例子，将抽象的几何知识具象化。也可以通过做练习题来巩固所学知识。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 交流论坛模块 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">交流论坛</h2>
+            <p class="text-gray-600 mb-4">加入我们的交流论坛，与其他数学爱好者一起讨论学习心得、分享学习资源。</p>
+            <a href="#" class="text-blue-500 hover:underline">进入交流论坛</a>
+        </div>
+
+        <!-- 反馈表单模块 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">反馈与建议</h2>
+            <p class="text-gray-600 mb-4">如果你有任何问题、建议或意见，欢迎通过以下表单告诉我们。</p>
+            <form>
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700 font-semibold mb-2">姓名</label>
+                    <input type="text" id="name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 font-semibold mb-2">邮箱</label>
+                    <input type="email" id="email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="message" class="block text-gray-700 font-semibold mb-2">留言内容</label>
+                    <textarea id="message" rows="4" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500"></textarea>
+                </div>
+                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none">提交反馈</button>
+            </form>
+        </div>
+
+        <!-- 联系信息模块 -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">联系我们</h2>
+            <ul class="space-y-2">
+                <li class="flex items-center text-gray-600">
+                    <i class="fa-solid fa-envelope mr-2"></i>
+                    <span>contact@treesmap.com</span>
+                </li>
+                <li class="flex items-center text-gray-600">
+                    <i class="fa-solid fa-phone mr-2"></i>
+                    <span>+86 123-456-7890</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
+
+        /* 活跃导航项样式 */
+        .active-nav {
+            position: relative;
+            font-weight: bold;
+        }
+        
+        .active-nav::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #ffffff;
+            border-radius: 2px;
+        }
+        
+        /* 添加过渡效果 */
+        section {
+            transition: opacity 0.5s ease;
+        }
+        
+        /* 卡片悬停效果增强 */
+        .bg-white {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .bg-white:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
