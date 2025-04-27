@@ -6,137 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-    <!-- 引入 mind-elixir 库的 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mind-elixir@1.0.0/dist/mind-elixir.min.css">
-    <style>
-        /* 自定义导航栏颜色为绿色 */
-        nav {
-            background-color: #38a169;
-        }
-
-        nav a {
-            color: white;
-        }
-
-        nav a:hover {
-            color: #e2e8f0;
-        }
-
-        /* 自定义卡片样式 */
-        .bg-white {
-            transition: transform 0.3s ease;
-        }
-
-        .bg-white:hover {
-            transform: scale(1.05);
-        }
-
-        /* 导航栏切换按钮样式 */
-        .menu-toggle {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .menu-toggle {
-                display: block;
-            }
-
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 60px;
-                left: 0;
-                right: 0;
-                background-color: #38a169;
-                padding: 10px;
-            }
-
-            .nav-links.show {
-                display: block;
-            }
-        }
-
-        /* 思维导图编辑区域样式 */
-        #mindmap-editor {
-            display: none;
-            height: 500px;
-            width: 100%;
-        }
-
-        /* 个人主页头像样式 */
-        .profile-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto 20px;
-        }
-
-        /* 我的路线图卡片样式 */
-        .my-roadmap-card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        /* 优化后的标题样式 */
-        h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #38a169;
-            text-align: center;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        h1::after {
-            content: "";
-            display: block;
-            width: 100px;
-            height: 3px;
-            background-color: #38a169;
-            margin: 0.5rem auto 0;
-        }
-
-        /* 分割线样式 */
-        .section-divider {
-            border-top: 2px solid #ccc;
-            margin: 2rem 0;
-            width: 100%;
-        }
-
-        /* 区域标识样式 */
-        .area-label {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #38a169;
-            margin-bottom: 1rem;
-        }
-
-        /* 数理森林卡片样式 */
-        #math-physics-card {
-            cursor: pointer;
-        }
-
-        /* 计算机Maps卡片样式 */
-        #computer-maps-card {
-            cursor: pointer;
-        }
-
-        /* 知识卡片初始隐藏 */
-        #roadmap-cards {
-            display: none;
-        }
-
-        #computer-roadmap-cards {
-            display: none;
-        }
-    </style>
+    <!-- 新增外部CSS链接 -->
+    <link rel="stylesheet" href="Untitled-2.css">
     <title>TreesMap - 学习路线图</title>
 </head>
-
 <body class="bg-gray-100 font-sans">
     <!-- 导航栏 -->
     <nav class="shadow-md">
@@ -199,12 +73,6 @@
         <div id="math-physics-card" class="bg-white rounded-md shadow-md p-4">
             <h2 class="text-xl font-bold text-gray-800 mb-2">数理森林</h2>
             <p class="text-gray-600 mb-4">点击查看数理相关的学习路线图</p>
-            <i class="fa-solid fa-chevron-down"></i>
-        </div>
-        <!-- 计算机Maps卡片 -->
-        <div id="computer-maps-card" class="bg-white rounded-md shadow-md p-4">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">计算机Maps</h2>
-            <p class="text-gray-600 mb-4">点击查看计算机相关的学习路线图</p>
             <i class="fa-solid fa-chevron-down"></i>
         </div>
         <!-- 为路线图卡片添加锚点 -->
@@ -326,6 +194,12 @@
                 <p class="text-gray-600 mb-4"></p>
                 <a href="#" class="text-blue-500 hover:underline view-roadmap" data-roadmap="more">查看</a>
             </div>
+        </div>
+         <!-- 计算机Maps卡片 -->
+         <div id="computer-maps-card" class="bg-white rounded-md shadow-md p-4">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">计算机Maps</h2>
+            <p class="text-gray-600 mb-4">点击查看计算机相关的学习路线图</p>
+            <i class="fa-solid fa-chevron-down"></i>
         </div>
         <!-- 计算机路线图卡片 -->
         <div id="computer-roadmap-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
