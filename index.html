@@ -38,13 +38,16 @@
     <!-- 个人主页界面，初始不隐藏 -->
     <div id="personal-homepage" class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-gray-800 mb-4">个人主页</h1>
+        <div>
         <!-- 个人头像 -->
-        <img src="https://via.placeholder.com/120" alt="个人头像" class="profile-avatar">
+        <img src="math-map/touxiang.jpg" alt="个人头像" class="profile-avatar hover:shadow-lg rounded-full" >
+    </div>
         <!-- 个人简介模块 -->
-        <div class="bg-white rounded-md shadow-md p-4 mb-8">
+        <form class="bg-white rounded-md shadow-md p-4 mb-8" method="get" action="#">
             <h2 class="text-xl font-bold text-gray-800 mb-2">个人简介</h2>
-            <p class="text-gray-600">空空如也</p>
-        </div>
+            <input type="text" name="name" placeholder="空空如也" class="text-gray-600">
+            <input type="submit" name="更改" value="更改" class="bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded">
+        </form>
         <!-- 历史记录模块 -->
         <div class="bg-white rounded-md shadow-md p-4 mb-8">
             <h2 class="text-xl font-bold text-gray-800 mb-2">历史记录</h2>

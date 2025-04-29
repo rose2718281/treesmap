@@ -55,11 +55,17 @@ nav a:hover {
 
 /* 个人主页头像样式 */
 .profile-avatar {
+    display: grid;
+    place-items: center;
+    border: #ffffff solid 2px;
     width: 120px;
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
     margin: 0 auto 20px;
+}
+img[alt]{
+    margin: 0 auto;
 }
 
 /* 我的路线图卡片样式 */
